@@ -18,8 +18,8 @@ const gameBoard = (() => {
         }
     }
 
-    const update = (row, col, playerMarker) => {
-        board[row][col] = playerMarker
+    const update = (row, col, marker) => {
+        board[row][col] = marker
     }
 
     const reset = () => {
@@ -34,7 +34,18 @@ const gameBoard = (() => {
         return board[row][col]
     }
 
-    const checkWinner = () => {}
+    const checkWinner = (marker) => {}
+
+    const checkEnd = () => {
+        for (i = 0; i < 3; i++) {
+            for (j = 0; j < 3; j++) {
+                if (board[i][j] === "") {
+                    return false
+                }
+            }
+        }
+        return true
+    }
 
     return {
         log,
@@ -42,17 +53,14 @@ const gameBoard = (() => {
         reset,
         getTile,
         checkWinner,
+        checkEnd,
     }
 })()
 
 // Player factory function
 const Player = (marker) => {
-    const won = () => {
-        console.log(`${marker} wins!`)
-    }
     return {
         marker,
-        won,
     }
 }
 
@@ -65,12 +73,16 @@ const displayController = (() => {
         announce.textContent = "Let's play!"
     }
 
-    const update = (row, col, playerMarker) => {
+    const update = (row, col, marker) => {
         let tileToUpdate = document.querySelector(
             `[data-tile="${String(row) + String(col)}"]`
         )
-        tileToUpdate.textContent = playerMarker
-        announce.textContent = `${playerMarker} chose (${row},${col})`
+        tileToUpdate.textContent = marker
+        announce.textContent = `${marker} chose (${row},${col})`
+    }
+
+    const winner = (marker) => {
+        winner.textContent = `${marker} wins!`
     }
 
     return {
@@ -96,16 +108,22 @@ const game = (() => {
     }
 
     const changePlayer = () => {
-        currentPlayer === marker1
-            ? (currentPlayer = marker2)
-            : (currentPlayer = marker1)
+        currentPlayer === player1.marker
+            ? (currentPlayer = player2.marker)
+            : (currentPlayer = player1.marker)
     }
 
     const takeTurn = (row, col) => {
         if (gameBoard.getTile(row, col) === "") {
             gameBoard.update(row, col, currentPlayer)
             displayController.update(row, col, currentPlayer)
-            changePlayer()
+            if (gameBoard.checkWinner(currentPlayer)) {
+                console.log(`${currentPlayer} wins!`)
+            } else if (checkEnd) {
+                console.log("No winner")
+            } else {
+                changePlayer()
+            }
         } else {
             console.log(
                 `Illegal move by ${currentPlayer.marker}, (${row}, ${col}) is occupied.`
@@ -127,6 +145,7 @@ const game = (() => {
 
 const newGameBtn = document.querySelector("#newGame-btn")
 const announce = document.querySelector(".announce")
+const winner = document.querySelector(".winner")
 const tiles = document.querySelectorAll(".tile")
 
 newGameBtn.addEventListener("click", () => {
