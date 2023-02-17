@@ -92,6 +92,7 @@ const game = (() => {
     const newGame = () => {
         gameBoard.reset()
         displayController.reset()
+        console.log("Ready to play!")
     }
 
     const changePlayer = () => {
@@ -100,14 +101,14 @@ const game = (() => {
             : (currentPlayer = marker1)
     }
 
-    const takeTurn = () => {
-        if (getTile(row, col) === "") {
+    const takeTurn = (row, col) => {
+        if (gameBoard.getTile(row, col) === "") {
             gameBoard.update(row, col, currentPlayer)
             displayController.update(row, col, currentPlayer)
             changePlayer()
         } else {
             console.log(
-                `Illegal move by ${currentPlayer.marker}, space is occupied.`
+                `Illegal move by ${currentPlayer.marker}, (${row}, ${col}) is occupied.`
             )
         }
     }
@@ -123,5 +124,19 @@ const game = (() => {
         getCurrentPlayer,
     }
 })()
+
+const newGameBtn = document.querySelector("#newGame-btn")
+newGameBtn.addEventListener("click", () => {
+    game.newGame()
+})
+
+const gameTiles = document.querySelectorAll(".tile")
+gameTiles.forEach((tile) => {
+    let row = tile.dataset.row
+    let col = tile.dataset.col
+    tile.addEventListener("click", () => {
+        game.takeTurn(row, col)
+    })
+})
 
 game.newGame()
