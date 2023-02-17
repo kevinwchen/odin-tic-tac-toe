@@ -71,6 +71,7 @@ const displayController = (() => {
             tile.textContent = ""
         })
         announce.textContent = "Let's play!"
+        result.textContent = ""
     }
 
     const update = (row, col, marker) => {
@@ -82,12 +83,18 @@ const displayController = (() => {
     }
 
     const winner = (marker) => {
-        winner.textContent = `${marker} wins!`
+        result.textContent = `${marker} wins!`
+    }
+
+    const tie = () => {
+        result.textContent = "No winner, tie game."
     }
 
     return {
         reset,
         update,
+        winner,
+        tie,
     }
 })()
 
@@ -117,14 +124,18 @@ const game = (() => {
         if (gameBoard.getTile(row, col) === "") {
             gameBoard.update(row, col, currentPlayer)
             displayController.update(row, col, currentPlayer)
+
             if (gameBoard.checkWinner(currentPlayer)) {
+                displayController.winner(currentPlayer)
                 console.log(`${currentPlayer} wins!`)
-            } else if (checkEnd) {
-                console.log("No winner")
+            } else if (gameBoard.checkEnd()) {
+                displayController.tie()
+                console.log("No winner, tie game.")
             } else {
                 changePlayer()
             }
         } else {
+            
             console.log(
                 `Illegal move by ${currentPlayer.marker}, (${row}, ${col}) is occupied.`
             )
@@ -145,7 +156,7 @@ const game = (() => {
 
 const newGameBtn = document.querySelector("#newGame-btn")
 const announce = document.querySelector(".announce")
-const winner = document.querySelector(".winner")
+const result = document.querySelector(".result")
 const tiles = document.querySelectorAll(".tile")
 
 newGameBtn.addEventListener("click", () => {
