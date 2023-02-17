@@ -31,10 +31,35 @@ const gameBoard = (() => {
     }
 
     const getTile = (row, col) => {
-        return board[row][col]
+        return board[Number(row)][Number(col)]
     }
 
-    const checkWinner = (marker) => {}
+    const checkWinner = (marker) => {
+        let gameWon = false
+        for (let i = 0; i < 3; i++) {
+            if (
+                (gameBoard.getTile(i, 0) === marker &&
+                    gameBoard.getTile(i, 1) === marker &&
+                    gameBoard.getTile(i, 2) === marker) ||
+                (gameBoard.getTile(0, i) === marker &&
+                    gameBoard.getTile(1, i) === marker &&
+                    gameBoard.getTile(2, i) === marker)
+            ) {
+                gameWon = true
+            }
+        }
+        if (
+            (gameBoard.getTile(0, 0) === marker &&
+                gameBoard.getTile(1, 1) === marker &&
+                gameBoard.getTile(2, 2) === marker) ||
+            (gameBoard.getTile(0, 2) === marker &&
+                gameBoard.getTile(1, 1) === marker &&
+                gameBoard.getTile(2, 0) === marker)
+        ) {
+            gameWon = true
+        }
+        return gameWon
+    }
 
     const checkEnd = () => {
         for (i = 0; i < 3; i++) {
@@ -83,7 +108,7 @@ const displayController = (() => {
     }
 
     const winner = (marker) => {
-        result.textContent = `${marker} wins!`
+        result.textContent = `${marker} wins, congratulations!`
     }
 
     const tie = () => {
@@ -106,11 +131,12 @@ const game = (() => {
     const player1 = Player(marker1)
     const player2 = Player(marker2)
 
-    let currentPlayer = player1.marker
+    let currentPlayer
 
     const newGame = () => {
         gameBoard.reset()
         displayController.reset()
+        currentPlayer = player1.marker
         console.log("Ready to play!")
     }
 
@@ -127,7 +153,7 @@ const game = (() => {
 
             if (gameBoard.checkWinner(currentPlayer)) {
                 displayController.winner(currentPlayer)
-                console.log(`${currentPlayer} wins!`)
+                console.log(`${currentPlayer} wins, congratulations!`)
             } else if (gameBoard.checkEnd()) {
                 displayController.tie()
                 console.log("No winner, tie game.")
@@ -135,9 +161,8 @@ const game = (() => {
                 changePlayer()
             }
         } else {
-            
             console.log(
-                `Illegal move by ${currentPlayer.marker}, (${row}, ${col}) is occupied.`
+                `Illegal move by ${currentPlayer}, (${row}, ${col}) is taken.`
             )
         }
     }
