@@ -5,21 +5,25 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="stylesheet" href="style.css" />
-        <script src="script.js"></script>
+        <script defer src="script.js"></script>
         <title>Odin Tic Tac Toe</title>
     </head>
     <body>
-        <div class="header">Tic-Tac-Toe Game</div>
+        <div class="header">Tic-Tac-Toe</div>
+        <div class="announce">Let's play!</div>
+        <div class="buttons">
+            <button id="newGame-btn">New Game</button>
+        </div>
         <div class="board">
-            <div class="tile"></div>
-            <div class="tile"></div>
-            <div class="tile"></div>
-            <div class="tile"></div>
-            <div class="tile"></div>
-            <div class="tile"></div>
-            <div class="tile"></div>
-            <div class="tile"></div>
-            <div class="tile"></div>
+            <div class="tile" data-tile="00" data-row="0" data-col="0"></div>
+            <div class="tile" data-tile="01" data-row="0" data-col="1"></div>
+            <div class="tile" data-tile="02" data-row="0" data-col="2"></div>
+            <div class="tile" data-tile="10" data-row="1" data-col="0"></div>
+            <div class="tile" data-tile="11" data-row="1" data-col="1"></div>
+            <div class="tile" data-tile="12" data-row="1" data-col="2"></div>
+            <div class="tile" data-tile="20" data-row="2" data-col="0"></div>
+            <div class="tile" data-tile="21" data-row="2" data-col="1"></div>
+            <div class="tile" data-tile="22" data-row="2" data-col="2"></div>
         </div>
         <div class="footer">Made by Kevin.</div>
     </body>
