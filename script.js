@@ -23,11 +23,11 @@ const gameBoard = (() => {
     }
 
     const reset = () => {
-        board = [
-            ["", "", ""],
-            ["", "", ""],
-            ["", "", ""],
-        ]
+        for (i = 0; i < 3; i++) {
+            for (j = 0; j < 3; j++) {
+                board[i][j] = ""
+            }
+        }
     }
 
     const getTile = (row, col) => {
@@ -58,12 +58,11 @@ const Player = (marker) => {
 
 // Display module, controls the DOM
 const displayController = (() => {
-    const tiles = document.querySelectorAll(".tile")
-
     const reset = () => {
         tiles.forEach((tile) => {
             tile.textContent = ""
         })
+        announce.textContent = "Let's play!"
     }
 
     const update = (row, col, playerMarker) => {
@@ -71,6 +70,7 @@ const displayController = (() => {
             `[data-tile="${String(row) + String(col)}"]`
         )
         tileToUpdate.textContent = playerMarker
+        announce.textContent = `${playerMarker} chose (${row},${col})`
     }
 
     return {
@@ -126,12 +126,14 @@ const game = (() => {
 })()
 
 const newGameBtn = document.querySelector("#newGame-btn")
+const announce = document.querySelector(".announce")
+const tiles = document.querySelectorAll(".tile")
+
 newGameBtn.addEventListener("click", () => {
     game.newGame()
 })
 
-const gameTiles = document.querySelectorAll(".tile")
-gameTiles.forEach((tile) => {
+tiles.forEach((tile) => {
     let row = tile.dataset.row
     let col = tile.dataset.col
     tile.addEventListener("click", () => {
