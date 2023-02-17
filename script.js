@@ -61,7 +61,7 @@ const gameBoard = (() => {
         return gameWon
     }
 
-    const checkEnd = () => {
+    const checkTie = () => {
         for (i = 0; i < 3; i++) {
             for (j = 0; j < 3; j++) {
                 if (board[i][j] === "") {
@@ -78,7 +78,7 @@ const gameBoard = (() => {
         reset,
         getTile,
         checkWinner,
-        checkEnd,
+        checkTie,
     }
 })()
 
@@ -154,7 +154,7 @@ const game = (() => {
             if (gameBoard.checkWinner(currentPlayer)) {
                 displayController.winner(currentPlayer)
                 console.log(`${currentPlayer} wins, congratulations!`)
-            } else if (gameBoard.checkEnd()) {
+            } else if (gameBoard.checkTie()) {
                 displayController.tie()
                 console.log("No winner, tie game.")
             } else {
