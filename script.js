@@ -18,8 +18,8 @@ const gameBoard = (() => {
         }
     }
 
-    const update = (row, col, marker) => {
-        board[row][col] = marker
+    const update = (row, col, player) => {
+        board[row][col] = player.getMarker()
     }
 
     const reset = () => {
@@ -34,7 +34,8 @@ const gameBoard = (() => {
         return board[Number(row)][Number(col)]
     }
 
-    const checkWinner = (marker) => {
+    const checkWinner = (player) => {
+        let marker = player.getMarker()
         let gameWon = false
         for (let i = 0; i < 3; i++) {
             if (
@@ -83,32 +84,56 @@ const gameBoard = (() => {
 })()
 
 // Player factory function
-const Player = (marker) => {
+const Player = (playerName, playerMarker) => {
+    let name = playerName
+    let marker = playerMarker
+
+    const setName = (newName) => {
+        name = newName
+    }
+
+    const setMarker = (newMarker) => {
+        marker = newMarker
+    }
+    const getName = () => name
+    const getMarker = () => marker
+
     return {
-        marker,
+        setName,
+        setMarker,
+        getName,
+        getMarker,
     }
 }
 
 // Display module, controls the DOM
 const displayController = (() => {
+    const showForm = () => {
+        playerFormContainer.style.display("block")
+    }
+
+    const hideForm = () => {
+        playerFormContainer.style.display("none")
+    }
+
     const reset = () => {
         tiles.forEach((tile) => {
             tile.textContent = ""
         })
-        announce.textContent = "Let's play!"
+        announce.textContent = `Let's play! ${player1.getName()} moves first.`
         result.textContent = ""
     }
 
-    const update = (row, col, marker) => {
+    const update = (row, col, player) => {
         let tileToUpdate = document.querySelector(
             `[data-tile="${String(row) + String(col)}"]`
         )
-        tileToUpdate.textContent = marker
-        announce.textContent = `${marker} chose (${row},${col})`
+        tileToUpdate.textContent = player.getMarker()
+        announce.textContent = `${player.getName()} chose (${row},${col})`
     }
 
-    const winner = (marker) => {
-        result.textContent = `${marker} wins, congratulations!`
+    const winner = (name) => {
+        result.textContent = `${name} wins, congratulations!`
     }
 
     const tie = () => {
@@ -116,6 +141,8 @@ const displayController = (() => {
     }
 
     return {
+        showForm,
+        hideForm,
         reset,
         update,
         winner,
@@ -125,40 +152,37 @@ const displayController = (() => {
 
 // Game module, high level controller of game flow
 const game = (() => {
-    const marker1 = "X"
-    const marker2 = "O"
-
-    const player1 = Player(marker1)
-    const player2 = Player(marker2)
-
     let currentPlayer
 
     const newGame = () => {
         gameBoard.reset()
         displayController.reset()
-        currentPlayer = player1.marker
+        currentPlayer = player1
         console.log("Ready to play!")
     }
 
     const changePlayer = () => {
-        currentPlayer === player1.marker
-            ? (currentPlayer = player2.marker)
-            : (currentPlayer = player1.marker)
+        currentPlayer === player1
+            ? (currentPlayer = player2)
+            : (currentPlayer = player1)
     }
 
     const takeTurn = (row, col) => {
-        if (gameBoard.getTile(row, col) === "") {
+        if (currentPlayer === undefined) {
+            console.log("No players set up.")
+        } else if (gameBoard.getTile(row, col) === "") {
             gameBoard.update(row, col, currentPlayer)
             displayController.update(row, col, currentPlayer)
 
             if (gameBoard.checkWinner(currentPlayer)) {
-                displayController.winner(currentPlayer)
-                console.log(`${currentPlayer} wins, congratulations!`)
+                displayController.winner(currentPlayer.getName())
+                console.log(`${currentPlayer.getName()} wins, congratulations!`)
             } else if (gameBoard.checkTie()) {
                 displayController.tie()
                 console.log("No winner, tie game.")
             } else {
                 changePlayer()
+                console.log("here")
             }
         } else {
             console.log(
@@ -182,10 +206,28 @@ const game = (() => {
 const newGameBtn = document.querySelector("#newGame-btn")
 const announce = document.querySelector(".announce")
 const result = document.querySelector(".result")
+const playerFormContainer = document.querySelector(".player-form-container")
+const playerForm = document.querySelector(".player-form")
 const tiles = document.querySelectorAll(".tile")
 
-newGameBtn.addEventListener("click", () => {
-    game.newGame()
+const player1 = Player("Player 1", "X")
+const player2 = Player("Player 2", "O")
+
+newGameBtn.addEventListener("click", (event) => {
+    let name1 = document.getElementById("player1-name").value
+    let name2 = document.getElementById("player2-name").value
+    let marker1 = document.getElementById("player1-marker").value
+    let marker2 = document.getElementById("player2-marker").value
+    if (name1 !== "" && name2 !== "" && marker1 !== "" && marker2 !== "") {
+        console.log("New game starting...")
+        player1.setName(name1)
+        player2.setName(name2)
+        player1.setMarker(marker1)
+        player2.setMarker(marker2)
+        game.newGame()
+        playerForm.reset()
+    }
+    event.preventDefault()
 })
 
 tiles.forEach((tile) => {
@@ -196,4 +238,9 @@ tiles.forEach((tile) => {
     })
 })
 
-game.newGame()
+// Build the logic that checks for when the game is over! Should check for 3-in-a-row and a tie.
+// Clean up the interface to allow players to put in their names, include a button to start/restart the game and add a display element that congratulates the winning player!
+// Optional - If you’re feeling ambitious create an AI so that a player can play against the computer!
+// Start by just getting the computer to make a random legal move.
+// Once you’ve gotten that, work on making the computer smart. It is possible to create an unbeatable AI using the minimax algorithm (read about it here, some googling will help you out with this one)
+// If you get this running definitely come show it off in the chatroom. It’s quite an accomplishment!
