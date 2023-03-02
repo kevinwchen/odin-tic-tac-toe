@@ -218,7 +218,13 @@ newGameBtn.addEventListener("click", (event) => {
     let name2 = document.getElementById("player2-name").value
     let marker1 = document.getElementById("player1-marker").value
     let marker2 = document.getElementById("player2-marker").value
-    if (name1 !== "" && name2 !== "" && marker1 !== "" && marker2 !== "") {
+    if (
+        name1 !== "" &&
+        name2 !== "" &&
+        marker1 !== "" &&
+        marker2 !== "" &&
+        marker1 !== marker2
+    ) {
         console.log("New game starting...")
         player1.setName(name1)
         player2.setName(name2)
