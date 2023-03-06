@@ -11,48 +11,62 @@
     <body>
         <div class="header">Tic-Tac-Toe</div>
         <div class="info">
-            <div class="announce">
-                Enter your names and markers (unique) to start playing!
+            <div class="announce"></div>
+            <div class="pick-mode-container">
+                <button id="mode-comp-btn" class="setup-btn">
+                    The computer
+                </button>
+                <button id="mode-friend-btn" class="setup-btn">A friend</button>
+            </div>
+            <div class="pick-start-container">
+                <button id="start-first-btn" class="setup-btn">
+                    First (X)
+                </button>
+                <button id="start-second-btn" class="setup-btn">
+                    Second (O)
+                </button>
             </div>
             <div class="result"></div>
+            <div class="player-form-container">
+                <form class="player-form" action="submit">
+                    <div>Player 1</div>
+                    <input
+                        type="text"
+                        name="player1-name"
+                        id="player1-name"
+                        placeholder="Name (e.g. Ticky)"
+                        required
+                    />
+                    <input
+                        type="text"
+                        name="player1-marker"
+                        id="player1-marker"
+                        placeholder="Marker (e.g. X)"
+                        required
+                        maxlength="1"
+                    />
+                    <div>Player 2</div>
+                    <input
+                        type="text"
+                        name="player2-name"
+                        id="player2-name"
+                        placeholder="Name (e.g. Tacko)"
+                        required
+                    />
+                    <input
+                        type="text"
+                        name="player2-marker"
+                        id="player2-marker"
+                        placeholder="Marker (e.g. O)"
+                        required
+                        maxlength="1"
+                    />
+                    <button id="newGame-btn">Start New Game</button>
+                </form>
+            </div>
+            <button id="play-again-btn" class="setup-btn">Play Again?</button>
         </div>
-        <div class="player-form-container">
-            <form class="player-form" action="submit">
-                <div>Player 1</div>
-                <div>Player 2</div>
-                <input
-                    type="text"
-                    name="player1-name"
-                    id="player1-name"
-                    placeholder="Name (e.g. Ticky)"
-                    required
-                />
-                <input
-                    type="text"
-                    name="player2-name"
-                    id="player2-name"
-                    placeholder="Name (e.g. Tacky)"
-                    required
-                />
-                <input
-                    type="text"
-                    name="player1-marker"
-                    id="player1-marker"
-                    placeholder="Marker (e.g. X)"
-                    required
-                    maxlength="1"
-                />
-                <input
-                    type="text"
-                    name="player2-marker"
-                    id="player2-marker"
-                    placeholder="Marker (e.g. O)"
-                    required
-                    maxlength="1"
-                />
-                <button id="newGame-btn">New Game</button>
-            </form>
-        </div>
+
         <div class="board">
             <div class="tile" data-tile="00" data-row="0" data-col="0"></div>
             <div class="tile" data-tile="01" data-row="0" data-col="1"></div>

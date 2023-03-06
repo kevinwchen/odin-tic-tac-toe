@@ -108,12 +108,39 @@ const Player = (playerName, playerMarker) => {
 
 // Display module, controls the DOM
 const displayController = (() => {
+    const showPickMode = () => {
+        document.querySelector(".pick-mode-container").style.display = "block"
+    }
+    const hidePickMode = () => {
+        document.querySelector(".pick-mode-container").style.display = "none"
+    }
+    const showPickStart = () => {
+        document.querySelector(".pick-start-container").style.display = "block"
+    }
+    const hidePickStart = () => {
+        document.querySelector(".pick-start-container").style.display = "none"
+    }
     const showForm = () => {
-        playerFormContainer.style.display("block")
+        document.querySelector(".player-form-container").style.display = "grid"
+    }
+    const hideForm = () => {
+        document.querySelector(".player-form-container").style.display = "none"
+    }
+    const showPlayAgain = () => {
+        document.querySelector(".play-again-btn").style.display = "block"
+    }
+    const hidePlayAgain = () => {
+        document.querySelector(".play-again-btn").style.display = "none"
     }
 
-    const hideForm = () => {
-        playerFormContainer.style.display("none")
+    const announceMode = () => {
+        announce.textContent = "Play against the computer or a friend?"
+    }
+    const announceTurn = () => {
+        announce.textContent = "Go first or second?"
+    }
+    const announceForm = () => {
+        announce.textContent = "Enter your names and markers to start playing!"
     }
 
     const reset = () => {
@@ -141,8 +168,17 @@ const displayController = (() => {
     }
 
     return {
+        showPickMode,
+        hidePickMode,
+        showPickStart,
+        hidePickStart,
         showForm,
         hideForm,
+        showPlayAgain,
+        hidePlayAgain,
+        announceMode,
+        announceTurn,
+        announceForm,
         reset,
         update,
         winner,
@@ -153,6 +189,15 @@ const displayController = (() => {
 // Game module, high level controller of game flow
 const game = (() => {
     let currentPlayer
+
+    const restart = () => {
+        gameBoard.reset()
+        displayController.announceMode()
+        displayController.showPickMode()
+        displayController.hidePickStart()
+        displayController.hideForm()
+        currentPlayer = undefined
+    }
 
     const newGame = () => {
         gameBoard.reset()
@@ -169,7 +214,7 @@ const game = (() => {
 
     const takeTurn = (row, col) => {
         if (currentPlayer === undefined) {
-            console.log("No players set up.")
+            console.log("Game must be set up before playing.")
         } else if (gameBoard.getTile(row, col) === "") {
             gameBoard.update(row, col, currentPlayer)
             displayController.update(row, col, currentPlayer)
@@ -182,7 +227,6 @@ const game = (() => {
                 console.log("No winner, tie game.")
             } else {
                 changePlayer()
-                console.log("here")
             }
         } else {
             console.log(
@@ -196,6 +240,7 @@ const game = (() => {
     }
 
     return {
+        restart,
         newGame,
         changePlayer,
         takeTurn,
@@ -203,7 +248,17 @@ const game = (() => {
     }
 })()
 
+// Computer module for taking turns
+const computer = (() => {
+    return {}
+})()
+
+const modeCompBtn = document.querySelector("#mode-comp-btn")
+const modeFriendBtn = document.querySelector("#mode-friend-btn")
+const startFirstBtn = document.querySelector("#start-first-btn")
+const startSecondBtn = document.querySelector("#start-second-btn")
 const newGameBtn = document.querySelector("#newGame-btn")
+const playAgainBtn = document.querySelector("#play-again-btn")
 const announce = document.querySelector(".announce")
 const result = document.querySelector(".result")
 const playerFormContainer = document.querySelector(".player-form-container")
@@ -212,6 +267,29 @@ const tiles = document.querySelectorAll(".tile")
 
 const player1 = Player("Player 1", "X")
 const player2 = Player("Player 2", "O")
+
+modeCompBtn.addEventListener("click", (event) => {
+    console.log("1 Player mode")
+    displayController.hidePickMode()
+    displayController.showPickStart()
+    displayController.announceTurn()
+})
+modeFriendBtn.addEventListener("click", (event) => {
+    console.log("2 Player mode")
+    displayController.hidePickMode()
+    displayController.showForm()
+    displayController.announceForm()
+})
+startFirstBtn.addEventListener("click", (event) => {
+    console.log("Player starts first")
+    displayController.hidePickStart()
+    displayController.reset()
+})
+startSecondBtn.addEventListener("click", (event) => {
+    console.log("Computer starts first")
+    displayController.hidePickStart()
+    displayController.reset()
+})
 
 newGameBtn.addEventListener("click", (event) => {
     let name1 = document.getElementById("player1-name").value
@@ -232,8 +310,15 @@ newGameBtn.addEventListener("click", (event) => {
         player2.setMarker(marker2)
         game.newGame()
         playerForm.reset()
+        displayController.hideForm()
     }
     event.preventDefault()
+})
+
+playAgainBtn.addEventListener("click", (event) => {
+    console.log("1 Player mode")
+    displayController.hidePickMode()
+    displayController.showPickStart()
 })
 
 tiles.forEach((tile) => {
@@ -244,9 +329,17 @@ tiles.forEach((tile) => {
     })
 })
 
+game.restart()
+
 // Build the logic that checks for when the game is over! Should check for 3-in-a-row and a tie.
 // Clean up the interface to allow players to put in their names, include a button to start/restart the game and add a display element that congratulates the winning player!
 // Optional - If you’re feeling ambitious create an AI so that a player can play against the computer!
 // Start by just getting the computer to make a random legal move.
 // Once you’ve gotten that, work on making the computer smart. It is possible to create an unbeatable AI using the minimax algorithm (read about it here, some googling will help you out with this one)
 // If you get this running definitely come show it off in the chatroom. It’s quite an accomplishment!
+
+// Choose one or two player
+// two player mode done
+// one player mode only X (goes first) and O
+// Choose to be X (first) or O (second)
+// after game finishes, go back to picking one/two player version
