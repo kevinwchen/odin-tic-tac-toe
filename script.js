@@ -127,10 +127,10 @@ const displayController = (() => {
         document.querySelector(".player-form-container").style.display = "none"
     }
     const showPlayAgain = () => {
-        document.querySelector(".play-again-btn").style.display = "block"
+        document.querySelector("#play-again-btn").style.display = "block"
     }
     const hidePlayAgain = () => {
-        document.querySelector(".play-again-btn").style.display = "none"
+        document.querySelector("#play-again-btn").style.display = "none"
     }
 
     const announceMode = () => {
@@ -141,6 +141,9 @@ const displayController = (() => {
     }
     const announceForm = () => {
         announce.textContent = "Enter your names and markers to start playing!"
+    }
+    const announceClear = () => {
+        announce.textContent = ""
     }
 
     const reset = () => {
@@ -179,6 +182,7 @@ const displayController = (() => {
         announceMode,
         announceTurn,
         announceForm,
+        announceClear,
         reset,
         update,
         winner,
@@ -207,9 +211,11 @@ const game = (() => {
     }
 
     const changePlayer = () => {
-        currentPlayer === player1
-            ? (currentPlayer = player2)
-            : (currentPlayer = player1)
+        if (currentPlayer === player1) {
+            currentPlayer = player2
+        } else {
+            currentPlayer = player1
+        }
     }
 
     const takeTurn = (row, col) => {
@@ -221,6 +227,7 @@ const game = (() => {
 
             if (gameBoard.checkWinner(currentPlayer)) {
                 displayController.winner(currentPlayer.getName())
+                displayController.showPlayAgain()
                 console.log(`${currentPlayer.getName()} wins, congratulations!`)
             } else if (gameBoard.checkTie()) {
                 displayController.tie()
@@ -250,7 +257,10 @@ const game = (() => {
 
 // Computer module for taking turns
 const computer = (() => {
-    return {}
+    const takeTurn = () => {}
+    return {
+        takeTurn,
+    }
 })()
 
 const modeCompBtn = document.querySelector("#mode-comp-btn")
@@ -283,12 +293,10 @@ modeFriendBtn.addEventListener("click", (event) => {
 startFirstBtn.addEventListener("click", (event) => {
     console.log("Player starts first")
     displayController.hidePickStart()
-    displayController.reset()
 })
 startSecondBtn.addEventListener("click", (event) => {
     console.log("Computer starts first")
     displayController.hidePickStart()
-    displayController.reset()
 })
 
 newGameBtn.addEventListener("click", (event) => {
@@ -316,9 +324,12 @@ newGameBtn.addEventListener("click", (event) => {
 })
 
 playAgainBtn.addEventListener("click", (event) => {
-    console.log("1 Player mode")
-    displayController.hidePickMode()
-    displayController.showPickStart()
+    game.newGame()
+    playerForm.reset()
+    displayController.hidePickStart()
+    displayController.hidePlayAgain()
+    displayController.showPickMode()
+    displayController.announceMode()
 })
 
 tiles.forEach((tile) => {
