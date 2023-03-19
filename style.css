@@ -46,6 +46,7 @@ body > * {
     width: 10em;
 }
 
+.pick-difficulty-container,
 .pick-start-container,
 .player-form-container,
 #play-again-btn {

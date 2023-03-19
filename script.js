@@ -31,7 +31,7 @@ const gameBoard = (() => {
     }
 
     const getTile = (row, col) => {
-        return board[Number(row)][Number(col)]
+        return board[row][col]
     }
 
     const checkWinner = (player) => {
@@ -163,7 +163,7 @@ const displayController = (() => {
     }
 
     const winner = (name) => {
-        result.textContent = `${name} wins, congratulations!`
+        result.textContent = `${name} wins!`
     }
 
     const tie = () => {
@@ -204,8 +204,6 @@ const game = (() => {
     }
 
     const newGame = () => {
-        gameBoard.reset()
-        displayController.reset()
         currentPlayer = player1
         console.log("Ready to play!")
     }
@@ -228,16 +226,25 @@ const game = (() => {
             if (gameBoard.checkWinner(currentPlayer)) {
                 displayController.winner(currentPlayer.getName())
                 displayController.showPlayAgain()
-                console.log(`${currentPlayer.getName()} wins, congratulations!`)
+                console.log(`${currentPlayer.getName()} wins!`)
+                currentPlayer = undefined
             } else if (gameBoard.checkTie()) {
                 displayController.tie()
+                displayController.showPlayAgain()
                 console.log("No winner, tie game.")
+                currentPlayer = undefined
             } else {
                 changePlayer()
+                if (currentPlayer.getName() === "Computer") {
+                    if (gameMode === 1) {
+                        computer.takeTurnRandom()
+                    } else if (gameMode === 2) {
+                    }
+                }
             }
         } else {
             console.log(
-                `Illegal move by ${currentPlayer}, (${row}, ${col}) is taken.`
+                `Illegal move by ${currentPlayer.getName()}, (${row}, ${col}) is taken.`
             )
         }
     }
@@ -246,20 +253,38 @@ const game = (() => {
         return currentPlayer
     }
 
+    const setDefaultPlayers = (playerOneName, playerTwoName) => {
+        player1 = Player(playerOneName, "X")
+        player2 = Player(playerTwoName, "O")
+    }
+
     return {
         restart,
         newGame,
         changePlayer,
         takeTurn,
         getCurrentPlayer,
+        setDefaultPlayers,
     }
 })()
 
 // Computer module for taking turns
 const computer = (() => {
-    const takeTurn = () => {}
+    const takeTurnRandom = () => {
+        let row, col
+        let turnTaken = false
+
+        while (!turnTaken) {
+            row = Math.floor(Math.random() * 3)
+            col = Math.floor(Math.random() * 3)
+            if (gameBoard.getTile(row, col) === "") {
+                game.takeTurn(row, col)
+                turnTaken = true
+            }
+        }
+    }
     return {
-        takeTurn,
+        takeTurnRandom,
     }
 })()
 
@@ -274,9 +299,11 @@ const result = document.querySelector(".result")
 const playerFormContainer = document.querySelector(".player-form-container")
 const playerForm = document.querySelector(".player-form")
 const tiles = document.querySelectorAll(".tile")
+let gameMode = 0
+let player1 = Player("Player 1", "X")
+let player2 = Player("Player 2", "O")
 
-const player1 = Player("Player 1", "X")
-const player2 = Player("Player 2", "O")
+game.setDefaultPlayers("Player 1", "Player 2")
 
 modeCompBtn.addEventListener("click", (event) => {
     console.log("1 Player mode")
@@ -293,10 +320,19 @@ modeFriendBtn.addEventListener("click", (event) => {
 startFirstBtn.addEventListener("click", (event) => {
     console.log("Player starts first")
     displayController.hidePickStart()
+    player1 = Player("Player", "X")
+    player2 = Player("Computer", "O")
+    gameMode = 1
+    game.newGame()
 })
 startSecondBtn.addEventListener("click", (event) => {
     console.log("Computer starts first")
     displayController.hidePickStart()
+    player1 = Player("Computer", "X")
+    player2 = Player("Player", "O")
+    gameMode = 1
+    game.newGame()
+    computer.takeTurnRandom()
 })
 
 newGameBtn.addEventListener("click", (event) => {
@@ -324,7 +360,9 @@ newGameBtn.addEventListener("click", (event) => {
 })
 
 playAgainBtn.addEventListener("click", (event) => {
-    game.newGame()
+    gameBoard.reset()
+    displayController.reset()
+    // game.newGame()
     playerForm.reset()
     displayController.hidePickStart()
     displayController.hidePlayAgain()
