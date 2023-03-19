@@ -13,7 +13,7 @@ const gameBoard = (() => {
 
     const log = () => {
         console.log("Current board state:")
-        for (i = 0; i < 3; i++) {
+        for (let i = 0; i < 3; i++) {
             console.log(board[i])
         }
     }
@@ -23,8 +23,8 @@ const gameBoard = (() => {
     }
 
     const reset = () => {
-        for (i = 0; i < 3; i++) {
-            for (j = 0; j < 3; j++) {
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
                 board[i][j] = ""
             }
         }
@@ -63,8 +63,8 @@ const gameBoard = (() => {
     }
 
     const checkTie = () => {
-        for (i = 0; i < 3; i++) {
-            for (j = 0; j < 3; j++) {
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
                 if (board[i][j] === "") {
                     return false
                 }
@@ -235,10 +235,11 @@ const game = (() => {
                 currentPlayer = undefined
             } else {
                 changePlayer()
-                if (currentPlayer.getName() === "Computer") {
-                    if (gameMode === 1) {
+                if (currentPlayer.getName() === "Computer" && gameMode === 1) {
+                    if (difficulty === 1) {
                         computer.takeTurnRandom()
-                    } else if (gameMode === 2) {
+                    } else if (difficulty === 2) {
+                        computer.takeTurnHard()
                     }
                 }
             }
@@ -283,8 +284,12 @@ const computer = (() => {
             }
         }
     }
+
+    const takeTurnHard = () => {}
+
     return {
         takeTurnRandom,
+        takeTurnHard,
     }
 })()
 
@@ -300,6 +305,7 @@ const playerFormContainer = document.querySelector(".player-form-container")
 const playerForm = document.querySelector(".player-form")
 const tiles = document.querySelectorAll(".tile")
 let gameMode = 0
+let difficulty = 1
 let player1 = Player("Player 1", "X")
 let player2 = Player("Player 2", "O")
 
@@ -310,28 +316,28 @@ modeCompBtn.addEventListener("click", (event) => {
     displayController.hidePickMode()
     displayController.showPickStart()
     displayController.announceTurn()
+    gameMode = 1
 })
 modeFriendBtn.addEventListener("click", (event) => {
     console.log("2 Player mode")
     displayController.hidePickMode()
     displayController.showForm()
     displayController.announceForm()
+    gameMode = 2
 })
 startFirstBtn.addEventListener("click", (event) => {
     console.log("Player starts first")
     displayController.hidePickStart()
-    player1 = Player("Player", "X")
-    player2 = Player("Computer", "O")
-    gameMode = 1
+    game.setDefaultPlayers("Player", "Computer")
     game.newGame()
+    displayController.reset()
 })
 startSecondBtn.addEventListener("click", (event) => {
     console.log("Computer starts first")
     displayController.hidePickStart()
-    player1 = Player("Computer", "X")
-    player2 = Player("Player", "O")
-    gameMode = 1
+    game.setDefaultPlayers("Computer", "Player")
     game.newGame()
+    displayController.reset()
     computer.takeTurnRandom()
 })
 
@@ -362,7 +368,6 @@ newGameBtn.addEventListener("click", (event) => {
 playAgainBtn.addEventListener("click", (event) => {
     gameBoard.reset()
     displayController.reset()
-    // game.newGame()
     playerForm.reset()
     displayController.hidePickStart()
     displayController.hidePlayAgain()
