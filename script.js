@@ -114,6 +114,12 @@ const displayController = (() => {
     const hidePickMode = () => {
         document.querySelector(".pick-mode-container").style.display = "none"
     }
+    const showPickDiff = () => {
+        document.querySelector(".pick-diff-container").style.display = "block"
+    }
+    const hidePickDiff = () => {
+        document.querySelector(".pick-diff-container").style.display = "none"
+    }
     const showPickStart = () => {
         document.querySelector(".pick-start-container").style.display = "block"
     }
@@ -135,6 +141,9 @@ const displayController = (() => {
 
     const announceMode = () => {
         announce.textContent = "Play against the computer or a friend?"
+    }
+    const announceChooseDiff = () => {
+        announce.textContent = "What difficulty?"
     }
     const announceTurn = () => {
         announce.textContent = "Go first or second?"
@@ -175,11 +184,14 @@ const displayController = (() => {
         hidePickMode,
         showPickStart,
         hidePickStart,
+        showPickDiff,
+        hidePickDiff,
         showForm,
         hideForm,
         showPlayAgain,
         hidePlayAgain,
         announceMode,
+        announceChooseDiff,
         announceTurn,
         announceForm,
         announceClear,
@@ -236,11 +248,7 @@ const game = (() => {
             } else {
                 changePlayer()
                 if (currentPlayer.getName() === "Computer" && gameMode === 1) {
-                    if (difficulty === 1) {
-                        computer.takeTurnRandom()
-                    } else if (difficulty === 2) {
-                        computer.takeTurnHard()
-                    }
+                    computer.takeTurn()
                 }
             }
         } else {
@@ -271,6 +279,14 @@ const game = (() => {
 
 // Computer module for taking turns
 const computer = (() => {
+    const takeTurn = () => {
+        if (difficulty === 1) {
+            takeTurnRandom()
+        } else if (difficulty === 2) {
+            takeTurnMinimax()
+        }
+    }
+
     const takeTurnRandom = () => {
         let row, col
         let turnTaken = false
@@ -285,11 +301,10 @@ const computer = (() => {
         }
     }
 
-    const takeTurnHard = () => {}
+    const takeTurnMinimax = () => {}
 
     return {
-        takeTurnRandom,
-        takeTurnHard,
+        takeTurn,
     }
 })()
 
@@ -297,6 +312,8 @@ const modeCompBtn = document.querySelector("#mode-comp-btn")
 const modeFriendBtn = document.querySelector("#mode-friend-btn")
 const startFirstBtn = document.querySelector("#start-first-btn")
 const startSecondBtn = document.querySelector("#start-second-btn")
+const diffEasyBtn = document.querySelector("#diff-easy-btn")
+const diffMinimaxBtn = document.querySelector("#diff-minimax-btn")
 const newGameBtn = document.querySelector("#newGame-btn")
 const playAgainBtn = document.querySelector("#play-again-btn")
 const announce = document.querySelector(".announce")
@@ -311,19 +328,33 @@ let player2 = Player("Player 2", "O")
 
 game.setDefaultPlayers("Player 1", "Player 2")
 
-modeCompBtn.addEventListener("click", (event) => {
-    console.log("1 Player mode")
-    displayController.hidePickMode()
-    displayController.showPickStart()
-    displayController.announceTurn()
-    gameMode = 1
-})
 modeFriendBtn.addEventListener("click", (event) => {
+    gameMode = 2
     console.log("2 Player mode")
     displayController.hidePickMode()
     displayController.showForm()
     displayController.announceForm()
-    gameMode = 2
+})
+modeCompBtn.addEventListener("click", (event) => {
+    gameMode = 1
+    console.log("1 Player mode")
+    displayController.hidePickMode()
+    displayController.showPickDiff()
+    displayController.announceChooseDiff()
+})
+diffEasyBtn.addEventListener("click", (event) => {
+    difficulty = 1
+    console.log("Easy difficulty mode")
+    displayController.hidePickDiff()
+    displayController.showPickStart()
+    displayController.announceTurn()
+})
+diffMinimaxBtn.addEventListener("click", (event) => {
+    difficulty = 2
+    console.log("Unbeatable difficulty mode")
+    displayController.hidePickDiff()
+    displayController.showPickStart()
+    displayController.announceTurn()
 })
 startFirstBtn.addEventListener("click", (event) => {
     console.log("Player starts first")
@@ -338,7 +369,7 @@ startSecondBtn.addEventListener("click", (event) => {
     game.setDefaultPlayers("Computer", "Player")
     game.newGame()
     displayController.reset()
-    computer.takeTurnRandom()
+    computer.takeTurn()
 })
 
 newGameBtn.addEventListener("click", (event) => {
@@ -384,16 +415,3 @@ tiles.forEach((tile) => {
 })
 
 game.restart()
-
-// Build the logic that checks for when the game is over! Should check for 3-in-a-row and a tie.
-// Clean up the interface to allow players to put in their names, include a button to start/restart the game and add a display element that congratulates the winning player!
-// Optional - If you’re feeling ambitious create an AI so that a player can play against the computer!
-// Start by just getting the computer to make a random legal move.
-// Once you’ve gotten that, work on making the computer smart. It is possible to create an unbeatable AI using the minimax algorithm (read about it here, some googling will help you out with this one)
-// If you get this running definitely come show it off in the chatroom. It’s quite an accomplishment!
-
-// Choose one or two player
-// two player mode done
-// one player mode only X (goes first) and O
-// Choose to be X (first) or O (second)
-// after game finishes, go back to picking one/two player version
