@@ -38,11 +38,12 @@ const gameBoard = (() => {
         return board
     }
 
-    const getEmpty = () => {
+    const getEmpty = (checkBoard) => {
+        // console.log(checkBoard)
         let emptyBoard = []
         for (let i = 0; i < 3; i++) {
             for (let j = 0; j < 3; j++) {
-                if (board[i][j] === "") {
+                if (checkBoard[i][j] === "") {
                     emptyBoard.push([i, j])
                 }
             }
@@ -50,38 +51,38 @@ const gameBoard = (() => {
         return emptyBoard
     }
 
-    const checkWinner = (player) => {
+    const checkWinner = (checkBoard, player) => {
         let marker = player.getMarker()
         let gameWon = false
         for (let i = 0; i < 3; i++) {
             if (
-                (gameBoard.getTile(i, 0) === marker &&
-                    gameBoard.getTile(i, 1) === marker &&
-                    gameBoard.getTile(i, 2) === marker) ||
-                (gameBoard.getTile(0, i) === marker &&
-                    gameBoard.getTile(1, i) === marker &&
-                    gameBoard.getTile(2, i) === marker)
+                (checkBoard[i][0] === marker &&
+                    checkBoard[i][1] === marker &&
+                    checkBoard[i][2] === marker) ||
+                (checkBoard[0][i] === marker &&
+                    checkBoard[1][i] === marker &&
+                    checkBoard[2][i] === marker)
             ) {
                 gameWon = true
             }
         }
         if (
-            (gameBoard.getTile(0, 0) === marker &&
-                gameBoard.getTile(1, 1) === marker &&
-                gameBoard.getTile(2, 2) === marker) ||
-            (gameBoard.getTile(0, 2) === marker &&
-                gameBoard.getTile(1, 1) === marker &&
-                gameBoard.getTile(2, 0) === marker)
+            (checkBoard[0][0] === marker &&
+                checkBoard[1][1] === marker &&
+                checkBoard[2][2] === marker) ||
+            (checkBoard[0][2] === marker &&
+                checkBoard[1][1] === marker &&
+                checkBoard[2][0] === marker)
         ) {
             gameWon = true
         }
         return gameWon
     }
 
-    const checkTie = () => {
+    const checkTie = (checkBoard) => {
         for (let i = 0; i < 3; i++) {
             for (let j = 0; j < 3; j++) {
-                if (board[i][j] === "") {
+                if (checkBoard[i][j] === "") {
                     return false
                 }
             }
@@ -222,8 +223,6 @@ const displayController = (() => {
 
 // Game module, high level controller of game flow
 const game = (() => {
-    let currentPlayer
-
     const restart = () => {
         gameBoard.reset()
         displayController.announceMode()
@@ -253,12 +252,12 @@ const game = (() => {
             gameBoard.update(row, col, currentPlayer)
             displayController.update(row, col, currentPlayer)
 
-            if (gameBoard.checkWinner(currentPlayer)) {
+            if (gameBoard.checkWinner(gameBoard.getBoard(), currentPlayer)) {
                 displayController.winner(currentPlayer.getName())
                 displayController.showPlayAgain()
                 console.log(`${currentPlayer.getName()} wins!`)
                 currentPlayer = undefined
-            } else if (gameBoard.checkTie()) {
+            } else if (gameBoard.checkTie(gameBoard.getBoard())) {
                 displayController.tie()
                 displayController.showPlayAgain()
                 console.log("No winner, tie game.")
@@ -319,7 +318,65 @@ const computer = (() => {
         }
     }
 
-    const takeTurnMinimax = () => {}
+    const takeTurnMinimax = () => {
+        const minimax = (newBoard, player, depth) => {
+            let moves = []
+            let chosenMoveIndex = 0
+            let emptyTiles = gameBoard.getEmpty(newBoard)
+
+            if (gameBoard.checkWinner(newBoard, humanPlayer)) {
+                return { score: -10 + depth }
+            } else if (gameBoard.checkWinner(newBoard, computerPlayer)) {
+                return { score: 10 - depth }
+            } else if (emptyTiles.length == 0) {
+                return { score: 0 }
+            }
+
+            depth += 1
+
+            for (let i = 0; i < emptyTiles.length; i++) {
+                let move = {}
+                move.row = emptyTiles[i][0]
+                move.col = emptyTiles[i][1]
+
+                // make test move to empty tile
+                newBoard[move.row][move.col] = player.getMarker()
+
+                // take next turn
+                if (player.getName() == computerPlayer.getName()) {
+                    move.score = minimax(newBoard, humanPlayer, depth).score
+                } else {
+                    move.score = minimax(newBoard, computerPlayer, depth).score
+                }
+
+                newBoard[move.row][move.col] = "" // reset test move
+                moves.push(move)
+            }
+
+            if (player === computerPlayer) {
+                let bestScore = -Infinity
+                for (let i = 0; i < moves.length; i++) {
+                    if (moves[i].score > bestScore) {
+                        chosenMoveIndex = i
+                        bestScore = moves[i].score
+                    }
+                }
+            } else {
+                let bestScore = Infinity
+                for (let i = 0; i < moves.length; i++) {
+                    if (moves[i].score < bestScore) {
+                        chosenMoveIndex = i
+                        bestScore = moves[i].score
+                    }
+                }
+            }
+
+            return moves[chosenMoveIndex]
+        }
+
+        let chosenMove = minimax(gameBoard.getBoard(), computerPlayer, 0)
+        game.takeTurn(chosenMove.row, chosenMove.col)
+    }
 
     return {
         takeTurn,
@@ -343,6 +400,7 @@ let gameMode = 0
 let difficulty = 1
 let player1 = Player("Player 1", "X")
 let player2 = Player("Player 2", "O")
+let humanPlayer, computerPlayer, currentPlayer
 
 game.setDefaultPlayers("Player 1", "Player 2")
 
@@ -378,6 +436,8 @@ startFirstBtn.addEventListener("click", (event) => {
     console.log("Player starts first")
     displayController.hidePickStart()
     game.setDefaultPlayers("Player", "Computer")
+    humanPlayer = player1
+    computerPlayer = player2
     game.newGame()
     displayController.reset()
 })
@@ -385,6 +445,8 @@ startSecondBtn.addEventListener("click", (event) => {
     console.log("Computer starts first")
     displayController.hidePickStart()
     game.setDefaultPlayers("Computer", "Player")
+    computerPlayer = player1
+    humanPlayer = player2
     game.newGame()
     displayController.reset()
     computer.takeTurn()
@@ -408,8 +470,9 @@ newGameBtn.addEventListener("click", (event) => {
         player1.setMarker(marker1)
         player2.setMarker(marker2)
         game.newGame()
-        playerForm.reset()
         displayController.hideForm()
+        playerForm.reset()
+        displayController.reset()
     }
     event.preventDefault()
 })
