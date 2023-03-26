@@ -34,6 +34,22 @@ const gameBoard = (() => {
         return board[row][col]
     }
 
+    const getBoard = () => {
+        return board
+    }
+
+    const getEmpty = () => {
+        let emptyBoard = []
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                if (board[i][j] === "") {
+                    emptyBoard.push([i, j])
+                }
+            }
+        }
+        return emptyBoard
+    }
+
     const checkWinner = (player) => {
         let marker = player.getMarker()
         let gameWon = false
@@ -78,6 +94,8 @@ const gameBoard = (() => {
         update,
         reset,
         getTile,
+        getBoard,
+        getEmpty,
         checkWinner,
         checkTie,
     }
