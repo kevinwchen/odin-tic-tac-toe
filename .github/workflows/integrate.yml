@@ -16,4 +16,12 @@ jobs:
                   node-version: "16.x"
             - run: npm ci
             - run: npm test
-            - run: npm start
+            - run: actions/deploy-pages@v2
+              with:
+                emit_telemetry: false
+                token: ***
+                timeout: 600000
+                error_count: 10
+                reporting_interval: 5000
+                artifact_name: github-pages
+                preview: false

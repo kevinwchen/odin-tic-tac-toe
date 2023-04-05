@@ -5,7 +5,7 @@
     "description": "This is a tic-tac-toe game made as an exercise to practice working with factory functions and modules for The Odin Project.",
     "main": "./index.js",
     "scripts": {
-        "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+        "test": "jest",
         "start": "node index.js"
     },
     "repository": {
