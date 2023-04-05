@@ -1,9 +1,9 @@
 {
     "name": "odin-tic-tac-toe",
     "version": "1.0.0",
-    "type": "module",
+    "type": "commonjs",
     "description": "This is a tic-tac-toe game made as an exercise to practice working with factory functions and modules for The Odin Project.",
-    "main": "./src/index.js",
+    "main": "./index.js",
     "scripts": {
         "test": "jest"
     },
@@ -18,7 +18,10 @@
     },
     "homepage": "https://github.com/kevinwchen/odin-tic-tac-toe#readme",
     "dependencies": {
-        "jest": "^29.5.0"
+        "dotenv": "^16.0.3",
+        "express": "^4.18.2",
+        "jest": "^29.5.0",
+        "nodemon": "^2.0.22"
     },
     "devDependencies": {
         "jest-environment-jsdom": "^29.5.0"

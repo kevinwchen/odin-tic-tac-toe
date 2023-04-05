@@ -1,8 +1,8 @@
 // Run with:
 // NODE_OPTIONS=--experimental-vm-modules npx jest
 
-import utils from "../src/utils.js"
-import gameBoard from "../src/gameBoard.js"
+import utils from "../public/utils.js"
+import gameBoard from "../public/gameBoard.js"
 
 test("Check game board is initialised correctly", () => {
     expect(gameBoard.getBoard()).toStrictEqual([
