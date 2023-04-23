@@ -1,6 +1,6 @@
 # Tic-Tac-Toe Game
 
-This is a tic-tac-toe game made as an exercise to practice working with factory functions and modules for The Odin Project. A live demo of the game can be accessed [here](kevinwchen.github.io/odin-tic-tac-toe/public).
+This is a tic-tac-toe game made as an exercise to practice working with factory functions and modules for The Odin Project. A live demo of the game can be accessed [here](https://kevinwchen.github.io/odin-tic-tac-toe/public/).
 
 Both a singleplayer and multiplayer version of the game are available. In the multiplayer version you can pick any unique "marker" for the board. In singleplayer mode the first move (either you or the computer) will always be crosses (X) and the other will be naughts (O).
 
